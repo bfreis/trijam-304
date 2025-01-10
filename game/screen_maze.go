@@ -2,6 +2,7 @@ package game
 
 import (
 	"image/color"
+	"time"
 
 	"github.com/bfreis/ebitentools/ebitenwrap"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -12,12 +13,15 @@ const (
 	mazeCellDisplayHeight = 32
 	mazeCellDisplayWidth  = 32
 	wallThickness         = 2.0
+	rotationInterval      = time.Second
 )
 
 type MazeScreen struct {
-	maze    *Maze
-	playerX int
-	playerY int
+	maze                   *Maze
+	playerX                int
+	playerY                int
+	playerDirection        MazeDirection
+	ticksSinceLastRotation int
 }
 
 func NewMazeScreen() (*MazeScreen, error) {
@@ -33,9 +37,11 @@ func NewMazeScreen() (*MazeScreen, error) {
 		return nil, err
 	}
 	return &MazeScreen{
-		maze:    maze,
-		playerX: 0,
-		playerY: 0,
+		maze:                   maze,
+		playerX:                0,
+		playerY:                0,
+		playerDirection:        MazeDirection(North),
+		ticksSinceLastRotation: 0,
 	}, nil
 }
 
@@ -43,6 +49,37 @@ func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
 		return nil
 	}
+
+	// Rotate player direction every rotationInterval
+	s.ticksSinceLastRotation++
+	if s.ticksSinceLastRotation >= int(rotationInterval.Seconds()*float64(tick.TPS)) {
+		s.playerDirection = MazeDirection((int(s.playerDirection) + 1) % 4)
+		s.ticksSinceLastRotation = 0
+	}
+
+	// Move player when enter is pressed
+	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEnter) {
+		nextX, nextY := s.playerX, s.playerY
+		switch s.playerDirection {
+		case MazeDirection(North):
+			nextY--
+		case MazeDirection(East):
+			nextX++
+		case MazeDirection(South):
+			nextY++
+		case MazeDirection(West):
+			nextX--
+		}
+
+		// Check if movement is valid (within bounds and no wall)
+		if nextX >= 0 && nextX < s.maze.Width &&
+			nextY >= 0 && nextY < s.maze.Height &&
+			!s.maze.HasWall(s.playerX, s.playerY, s.playerDirection) {
+			s.playerX = nextX
+			s.playerY = nextY
+		}
+	}
+
 	return nil
 }
 
@@ -84,5 +121,25 @@ func (s *MazeScreen) Draw(screen *ebiten.Image) {
 	playerRadius := float32(mazeCellDisplayWidth) / 4
 	playerPosX := float32(offsetX + float64(s.playerX)*cellWidth + cellWidth/2)
 	playerPosY := float32(offsetY + float64(s.playerY)*cellHeight + cellHeight/2)
+
+	// Draw player body
 	vector.DrawFilledCircle(screen, playerPosX, playerPosY, playerRadius, color.RGBA{255, 200, 0, 255}, false)
+
+	// Draw direction indicator
+	indicatorLength := playerRadius * 1.2
+	var dx, dy float32
+	switch s.playerDirection {
+	case MazeDirection(North):
+		dx, dy = 0, -indicatorLength
+	case MazeDirection(East):
+		dx, dy = indicatorLength, 0
+	case MazeDirection(South):
+		dx, dy = 0, indicatorLength
+	case MazeDirection(West):
+		dx, dy = -indicatorLength, 0
+	}
+	vector.StrokeLine(screen,
+		playerPosX, playerPosY,
+		playerPosX+dx, playerPosY+dy,
+		wallThickness*2, color.RGBA{255, 100, 0, 255}, false)
 }
