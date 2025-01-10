@@ -1,1 +1,4 @@
 /.task
+
+/platforms/web/*
+!/platforms/web/index.html

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<style>
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: monospace;
+        font-size: 16px;
+        margin: 0;
+        padding: 0;
+    }
+    /*canvas {*/
+    /*    display: block;*/
+    /*    margin: 0 auto;*/
+    /*}*/
+</style>
+<script src="wasm_exec.js"></script>
+<script>
+// Polyfill
+if (!WebAssembly.instantiateStreaming) {
+  WebAssembly.instantiateStreaming = async (resp, importObject) => {
+    const source = await (await resp).arrayBuffer();
+    return await WebAssembly.instantiate(source, importObject);
+  };
+}
+
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("dist.wasm"), go.importObject).then(result => {
+  go.run(result.instance);
+});
+</script>

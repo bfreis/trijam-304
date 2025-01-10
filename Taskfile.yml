@@ -1,0 +1,26 @@
+version: 3
+
+tasks:
+  mod:
+    silent: true
+    sources:
+      - ./**/*.go
+      - go.mod
+      - go.sum
+    cmds:
+      - go mod tidy
+      - go mod verify
+
+  build:web:
+    deps:
+      - mod
+    cmds:
+      - GOOS=js GOARCH=wasm go build -o platforms/web/dist.wasm
+      - cp $(go env GOROOT)/lib/wasm/wasm_exec.js platforms/web/
+      - chmod +w platforms/web/wasm_exec.js
+
+  run:web:
+    deps:
+      - build:web
+    cmds:
+      - python3 -m http.server --directory platforms/web --bind 127.0.0.1
