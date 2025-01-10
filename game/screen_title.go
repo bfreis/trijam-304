@@ -53,7 +53,7 @@ func NewTitleScreen() *TitleScreen {
 	return &TitleScreen{
 		selectedOption: 0,
 		options:        []string{"Start", "Player Speed", "About"},
-		playerSpeed:    SpeedLow,
+		playerSpeed:    SpeedMedium,
 		tickCounter:    0,
 	}
 }

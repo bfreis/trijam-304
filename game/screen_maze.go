@@ -28,21 +28,12 @@ type MazeScreen struct {
 }
 
 func NewMazeScreen(playerSpeed PlayerSpeed) (*MazeScreen, error) {
-	const mazeString = `+--+--+--+
-|  |  |   
-+  +--+  +
-|        |
-+  +  +--+
-|  |     |
-+--+--+--+`
-	maze, err := ParseMaze(mazeString)
-	if err != nil {
-		return nil, err
-	}
+	maze, pos := GenerateMaze(10, 10)
+
 	return &MazeScreen{
 		maze:                   maze,
-		playerX:                0,
-		playerY:                0,
+		playerX:                pos.X,
+		playerY:                pos.Y,
 		playerDirection:        MazeDirection(North),
 		ticksSinceLastRotation: 0,
 		hasWon:                 false,

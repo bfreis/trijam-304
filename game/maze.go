@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 )
 
@@ -261,4 +262,99 @@ func ParseMaze(s string) (*Maze, error) {
 	}
 
 	return maze, nil
+}
+
+// Position represents a 2D position in the maze
+type Position struct {
+	X, Y int
+}
+
+// GenerateMaze creates a new random maze with the specified dimensions
+// It returns the maze and the starting position for the player
+func GenerateMaze(width, height int) (*Maze, Position) {
+	maze := NewMaze(width, height)
+
+	// Create a visited cells tracker
+	visited := make([][]bool, height)
+	for i := range visited {
+		visited[i] = make([]bool, width)
+	}
+
+	// Start from a random position
+	startX := 0
+	startY := height - 1 // Bottom-left corner
+
+	// Generate the maze using DFS
+	generateMazeDFS(maze, visited, startX, startY)
+
+	// Create an exit by removing a random external wall
+	// First, decide which wall to remove (North, South, East, or West edge)
+	edge := rand.Intn(4)
+	var x, y int
+	var direction MazeDirection
+
+	switch edge {
+	case 0: // North edge
+		x = rand.Intn(width)
+		y = 0
+		direction = North
+	case 1: // South edge
+		x = rand.Intn(width)
+		y = height - 1
+		direction = South
+	case 2: // East edge
+		x = width - 1
+		y = rand.Intn(height)
+		direction = East
+	case 3: // West edge
+		x = 0
+		y = rand.Intn(height)
+		direction = West
+	}
+
+	// Remove the selected wall
+	maze.RemoveWall(x, y, direction)
+
+	return maze, Position{X: startX, Y: startY}
+}
+
+// generateMazeDFS is a recursive function that implements the depth-first search algorithm
+func generateMazeDFS(maze *Maze, visited [][]bool, x, y int) {
+	visited[y][x] = true
+
+	// Define possible directions in a random order
+	directions := []MazeDirection{North, East, South, West}
+	shuffleDirections(directions)
+
+	// Try each direction
+	for _, dir := range directions {
+		// Calculate new position
+		newX, newY := x, y
+		switch dir {
+		case North:
+			newY--
+		case South:
+			newY++
+		case East:
+			newX++
+		case West:
+			newX--
+		}
+
+		// Check if the new position is valid and unvisited
+		if maze.IsValidPosition(newX, newY) && !visited[newY][newX] {
+			// Remove walls between current and new position
+			maze.RemoveWall(x, y, dir)
+			// Continue with DFS from the new position
+			generateMazeDFS(maze, visited, newX, newY)
+		}
+	}
+}
+
+// shuffleDirections randomly shuffles a slice of directions
+func shuffleDirections(dirs []MazeDirection) {
+	for i := len(dirs) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		dirs[i], dirs[j] = dirs[j], dirs[i]
+	}
 }
