@@ -5,7 +5,7 @@ import (
 
 	"github.com/bfreis/ebitentools/ebitenwrap"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/text"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font/basicfont"
 )
@@ -52,19 +52,27 @@ func (s *TitleScreen) Update(tick ebitenwrap.Tick) error {
 	return nil
 }
 
+var face7x13 = text.NewGoXFace(basicfont.Face7x13)
+
 func (s *TitleScreen) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{40, 40, 40, 255})
 
 	// Draw title
-	text.Draw(screen, "Maze Game", basicfont.Face7x13, 320, 200, color.White)
+	opts := &text.DrawOptions{}
+	opts.GeoM.Translate(320, 200)
+	text.Draw(screen, "Maze Game", face7x13, opts)
 
 	// Draw menu options
 	for i, option := range s.options {
 		y := 300 + i*40
+		opts := &text.DrawOptions{}
+		opts.GeoM.Translate(300, float64(y))
 		if i == s.selectedOption {
-			text.Draw(screen, "> "+option, basicfont.Face7x13, 300, y, color.RGBA{255, 255, 0, 255})
+			opts.ColorScale.Scale(1, 1, 0, 1) // Yellow
+			text.Draw(screen, "> "+option, face7x13, opts)
 		} else {
-			text.Draw(screen, "  "+option, basicfont.Face7x13, 300, y, color.White)
+			opts.ColorScale.Scale(1, 1, 1, 1) // White
+			text.Draw(screen, "  "+option, face7x13, opts)
 		}
 	}
 }
@@ -84,9 +92,17 @@ func (s *AboutScreen) Update(tick ebitenwrap.Tick) error {
 
 func (s *AboutScreen) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{40, 40, 40, 255})
-	text.Draw(screen, "About Maze Game", basicfont.Face7x13, 320, 200, color.White)
-	text.Draw(screen, "A simple maze game created for learning Go", basicfont.Face7x13, 250, 250, color.White)
-	text.Draw(screen, "Press ESC to return", basicfont.Face7x13, 300, 350, color.White)
+	opts := &text.DrawOptions{}
+	opts.GeoM.Translate(320, 200)
+	text.Draw(screen, "About Maze Game", face7x13, opts)
+
+	opts = &text.DrawOptions{}
+	opts.GeoM.Translate(250, 250)
+	text.Draw(screen, "A simple maze game created for learning Go", face7x13, opts)
+
+	opts = &text.DrawOptions{}
+	opts.GeoM.Translate(300, 350)
+	text.Draw(screen, "Press ESC to return", face7x13, opts)
 }
 
 type MazeScreen struct {
