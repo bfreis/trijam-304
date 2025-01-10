@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -192,4 +193,72 @@ func (m *Maze) String() string {
 	}
 
 	return result.String()
+}
+
+// ParseMaze converts a string representation back into a Maze struct
+func ParseMaze(s string) (*Maze, error) {
+	lines := strings.Split(strings.TrimSpace(s), "\n")
+	if len(lines) < 3 { // Need at least top border + one cell row + bottom border
+		return nil, fmt.Errorf("invalid maze string: too few lines")
+	}
+
+	// Calculate dimensions
+	width := (len(lines[0]) - 1) / 3 // Each cell is 3 chars wide including walls
+	height := (len(lines) - 1) / 2   // Each cell is 2 lines tall including walls
+
+	if width < 1 || height < 1 {
+		return nil, fmt.Errorf("invalid maze dimensions: width=%d, height=%d", width, height)
+	}
+
+	maze := NewMaze(width, height)
+
+	// Process each cell
+	for y := 0; y < height; y++ {
+		// Check vertical walls (in the cell content line)
+		cellLine := lines[y*2+1]
+		if len(cellLine) != width*3+1 {
+			return nil, fmt.Errorf("invalid line length at y=%d", y)
+		}
+
+		for x := 0; x < width; x++ {
+			// Check west wall
+			if x == 0 {
+				if cellLine[0] != '|' {
+					maze.RemoveWall(x, y, West)
+				}
+			}
+
+			// Check east wall
+			if cellLine[x*3+3] == ' ' {
+				maze.RemoveWall(x, y, East)
+			}
+		}
+
+		// Check horizontal walls (in the wall line)
+		if y < height {
+			wallLine := lines[y*2+2]
+			if len(wallLine) != width*3+1 {
+				return nil, fmt.Errorf("invalid wall line length at y=%d", y)
+			}
+
+			for x := 0; x < width; x++ {
+				// Check south wall
+				if wallLine[x*3+1:x*3+3] == "  " {
+					maze.RemoveWall(x, y, South)
+				}
+			}
+		}
+
+		// Check north walls for first row
+		if y == 0 {
+			topLine := lines[0]
+			for x := 0; x < width; x++ {
+				if topLine[x*3+1:x*3+3] == "  " {
+					maze.RemoveWall(x, y, North)
+				}
+			}
+		}
+	}
+
+	return maze, nil
 }
