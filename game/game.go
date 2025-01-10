@@ -62,13 +62,11 @@ func (g *Game) Update(tick ebitenwrap.Tick) error {
 		err = g.mazeScreen.Update(tick)
 		if err == nil && tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
 			g.currentScreen = ScreenTitle
-			g.titleScreen = NewTitleScreen() // Reset title screen state
 		}
 	case ScreenAbout:
 		err = g.aboutScreen.Update(tick)
 		if err == nil && tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
 			g.currentScreen = ScreenTitle
-			g.titleScreen = NewTitleScreen() // Reset title screen state
 		}
 	}
 

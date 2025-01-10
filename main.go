@@ -26,7 +26,7 @@ func run() {
 		log.Fatalf("error creating fx app: %v", err)
 	}
 
-	ebiten.SetWindowSize(800, 600)
+	ebiten.SetWindowSize(800, 800)
 	ebiten.SetWindowTitle("Trijam")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
