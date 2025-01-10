@@ -42,18 +42,54 @@ func (s PlayerSpeed) RotationsPerSecond() float64 {
 	}
 }
 
+type MazeSize int
+
+const (
+	SizeSmall MazeSize = iota
+	SizeMedium
+	SizeBig
+)
+
+func (s MazeSize) String() string {
+	switch s {
+	case SizeSmall:
+		return "Small"
+	case SizeMedium:
+		return "Medium"
+	case SizeBig:
+		return "Big"
+	default:
+		return "Unknown"
+	}
+}
+
+func (s MazeSize) Dimensions() (int, int) {
+	switch s {
+	case SizeSmall:
+		return 3, 3
+	case SizeMedium:
+		return 10, 10
+	case SizeBig:
+		return 20, 20
+	default:
+		return 10, 10
+	}
+}
+
 type TitleScreen struct {
 	selectedOption int
 	options        []string
 	playerSpeed    PlayerSpeed
+	mazeSize       MazeSize
 	tickCounter    int
 }
 
 func NewTitleScreen() *TitleScreen {
 	return &TitleScreen{
 		selectedOption: 0,
-		options:        []string{"Start", "Player Speed", "About"},
+		options:        []string{"Start", "Player Speed", "Maze Size", "About"},
 		playerSpeed:    SpeedMedium,
+		mazeSize:       SizeMedium,
 		tickCounter:    0,
 	}
 }
@@ -65,8 +101,11 @@ func (s *TitleScreen) Update(tick ebitenwrap.Tick) error {
 		s.tickCounter = 0
 	}
 	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEnter) {
-		if s.options[s.selectedOption] == "Player Speed" {
+		switch s.options[s.selectedOption] {
+		case "Player Speed":
 			s.playerSpeed = PlayerSpeed((int(s.playerSpeed) + 1) % 3)
+		case "Maze Size":
+			s.mazeSize = MazeSize((int(s.mazeSize) + 1) % 3)
 		}
 	}
 	return nil
@@ -87,8 +126,11 @@ func (s *TitleScreen) Draw(screen *ebiten.Image) {
 		opts.GeoM.Translate(300, float64(y))
 
 		menuText := option
-		if option == "Player Speed" {
+		switch option {
+		case "Player Speed":
 			menuText = option + ": " + s.playerSpeed.String()
+		case "Maze Size":
+			menuText = option + ": " + s.mazeSize.String()
 		}
 
 		if i == s.selectedOption {

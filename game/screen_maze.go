@@ -27,8 +27,9 @@ type MazeScreen struct {
 	playerSpeed            PlayerSpeed
 }
 
-func NewMazeScreen(playerSpeed PlayerSpeed) (*MazeScreen, error) {
-	maze, pos := GenerateMaze(10, 10)
+func NewMazeScreen(playerSpeed PlayerSpeed, mazeSize MazeSize) (*MazeScreen, error) {
+	width, height := mazeSize.Dimensions()
+	maze, pos := GenerateMaze(width, height)
 
 	return &MazeScreen{
 		maze:                   maze,
