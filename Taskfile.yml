@@ -24,3 +24,10 @@ tasks:
       - build:web
     cmds:
       - python3 -m http.server --directory platforms/web --bind 127.0.0.1
+
+  bundle:web:
+    deps:
+      - build:web
+    cmds:
+      - |
+         (cd platforms/web; rm -f bundle.zip; zip bundle.zip index.html dist.wasm wasm_exec.js)

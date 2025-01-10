@@ -281,8 +281,8 @@ func GenerateMaze(width, height int) (*Maze, Position) {
 	}
 
 	// Start from a random position
-	startX := 0
-	startY := height - 1 // Bottom-left corner
+	startX := rand.Intn(width)
+	startY := rand.Intn(height)
 
 	// Generate the maze using DFS
 	generateMazeDFS(maze, visited, startX, startY)

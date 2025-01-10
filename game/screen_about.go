@@ -30,9 +30,21 @@ func (s *AboutScreen) Draw(screen *ebiten.Image) {
 
 	opts = &text.DrawOptions{}
 	opts.GeoM.Translate(250, 250)
-	text.Draw(screen, "A simple maze game created for learning Go", face7x13, opts)
+	text.Draw(screen, "A maze game created for Trijam #304", face7x13, opts)
 
 	opts = &text.DrawOptions{}
-	opts.GeoM.Translate(300, 350)
+	opts.GeoM.Translate(250, 300)
+	text.Draw(screen, "Theme: \"one button adventure\"", face7x13, opts)
+
+	opts = &text.DrawOptions{}
+	opts.GeoM.Translate(250, 325)
+	text.Draw(screen, "Time taken: 2h, with help from Cursor", face7x13, opts)
+
+	opts = &text.DrawOptions{}
+	opts.GeoM.Translate(250, 350)
+	text.Draw(screen, "https://bfreis.itch.io/single-button-maze", face7x13, opts)
+
+	opts = &text.DrawOptions{}
+	opts.GeoM.Translate(300, 400)
 	text.Draw(screen, "Press ESC to return", face7x13, opts)
 }

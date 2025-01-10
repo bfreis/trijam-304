@@ -27,7 +27,7 @@ func run() {
 	}
 
 	ebiten.SetWindowSize(800, 800)
-	ebiten.SetWindowTitle("Trijam")
+	ebiten.SetWindowTitle("Trijam #304 - Single Button Maze")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	//ebiten.SetScreenClearedEveryFrame(false)
