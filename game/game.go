@@ -5,12 +5,13 @@ import (
 
 	"github.com/bfreis/ebitentools/ebitenwrap"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 const (
 	mazeCellDisplayHeight = 32
 	mazeCellDisplayWidth  = 32
+	wallThickness         = 2.0
 )
 
 type Game struct {
@@ -62,16 +63,16 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 			// Draw walls if they exist
 			if g.maze.HasWall(x, y, North) {
-				ebitenutil.DrawLine(screen, px, py, px+cellWidth, py, color.White)
+				vector.StrokeLine(screen, float32(px), float32(py), float32(px+cellWidth), float32(py), float32(wallThickness), color.White, false)
 			}
 			if g.maze.HasWall(x, y, East) {
-				ebitenutil.DrawLine(screen, px+cellWidth, py, px+cellWidth, py+cellHeight, color.White)
+				vector.StrokeLine(screen, float32(px+cellWidth), float32(py), float32(px+cellWidth), float32(py+cellHeight), float32(wallThickness), color.White, false)
 			}
 			if g.maze.HasWall(x, y, South) {
-				ebitenutil.DrawLine(screen, px, py+cellHeight, px+cellWidth, py+cellHeight, color.White)
+				vector.StrokeLine(screen, float32(px), float32(py+cellHeight), float32(px+cellWidth), float32(py+cellHeight), float32(wallThickness), color.White, false)
 			}
 			if g.maze.HasWall(x, y, West) {
-				ebitenutil.DrawLine(screen, px, py, px, py+cellHeight, color.White)
+				vector.StrokeLine(screen, float32(px), float32(py), float32(px), float32(py+cellHeight), float32(wallThickness), color.White, false)
 			}
 		}
 	}
