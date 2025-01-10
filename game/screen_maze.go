@@ -6,6 +6,7 @@ import (
 
 	"github.com/bfreis/ebitentools/ebitenwrap"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -14,6 +15,7 @@ const (
 	mazeCellDisplayWidth  = 32
 	wallThickness         = 2.0
 	rotationInterval      = time.Second
+	winMessageScale       = 3.0
 )
 
 type MazeScreen struct {
@@ -22,6 +24,8 @@ type MazeScreen struct {
 	playerY                int
 	playerDirection        MazeDirection
 	ticksSinceLastRotation int
+	hasWon                 bool
+	exitDirection          MazeDirection // Direction where player exited the maze
 }
 
 func NewMazeScreen() (*MazeScreen, error) {
@@ -42,11 +46,16 @@ func NewMazeScreen() (*MazeScreen, error) {
 		playerY:                0,
 		playerDirection:        MazeDirection(North),
 		ticksSinceLastRotation: 0,
+		hasWon:                 false,
 	}, nil
 }
 
 func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
+		return nil
+	}
+
+	if s.hasWon {
 		return nil
 	}
 
@@ -69,6 +78,14 @@ func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 			nextY++
 		case MazeDirection(West):
 			nextX--
+		}
+
+		// Check if movement would lead to winning
+		if !s.maze.HasWall(s.playerX, s.playerY, s.playerDirection) &&
+			(nextX < 0 || nextX >= s.maze.Width || nextY < 0 || nextY >= s.maze.Height) {
+			s.hasWon = true
+			s.exitDirection = s.playerDirection
+			return nil
 		}
 
 		// Check if movement is valid (within bounds and no wall)
@@ -117,10 +134,25 @@ func (s *MazeScreen) Draw(screen *ebiten.Image) {
 		}
 	}
 
+	// Calculate player position, adjusting for win state
+	playerX, playerY := s.playerX, s.playerY
+	if s.hasWon {
+		switch s.exitDirection {
+		case MazeDirection(North):
+			playerY = -1
+		case MazeDirection(East):
+			playerX = s.maze.Width
+		case MazeDirection(South):
+			playerY = s.maze.Height
+		case MazeDirection(West):
+			playerX = -1
+		}
+	}
+
 	// Draw player
 	playerRadius := float32(mazeCellDisplayWidth) / 4
-	playerPosX := float32(offsetX + float64(s.playerX)*cellWidth + cellWidth/2)
-	playerPosY := float32(offsetY + float64(s.playerY)*cellHeight + cellHeight/2)
+	playerPosX := float32(offsetX + float64(playerX)*cellWidth + cellWidth/2)
+	playerPosY := float32(offsetY + float64(playerY)*cellHeight + cellHeight/2)
 
 	// Draw player body
 	vector.DrawFilledCircle(screen, playerPosX, playerPosY, playerRadius, color.RGBA{255, 200, 0, 255}, false)
@@ -142,4 +174,21 @@ func (s *MazeScreen) Draw(screen *ebiten.Image) {
 		playerPosX, playerPosY,
 		playerPosX+dx, playerPosY+dy,
 		wallThickness*2, color.RGBA{255, 100, 0, 255}, false)
+
+	// Draw win message if player has won
+	if s.hasWon {
+		// Draw semi-transparent dark overlay
+		vector.DrawFilledRect(screen, 0, 0, float32(sw), float32(sh), color.RGBA{0, 0, 0, 180}, false)
+
+		const winMessage = "YOU WON!"
+
+		opts := &text.DrawOptions{}
+		opts.GeoM.Scale(winMessageScale, winMessageScale)
+		opts.GeoM.Translate(
+			float64(sw)/2-float64(len(winMessage)*7)*winMessageScale/2, // Approximate width based on monospace font
+			float64(sh)/2-float64(13)*winMessageScale/2,                // Approximate height based on font size
+		)
+		opts.ColorScale.Scale(1, 1, 0, 1) // Yellow color
+		text.Draw(screen, winMessage, face7x13, opts)
+	}
 }
