@@ -13,7 +13,7 @@ type Game struct {
 }
 
 func NewGame() (*Game, error) {
-	mazeScreen, err := NewMazeScreen()
+	mazeScreen, err := NewMazeScreen(SpeedMedium)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,13 @@ func (g *Game) Update(tick ebitenwrap.Tick) error {
 		if err == nil && tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEnter) {
 			switch g.titleScreen.selectedOption {
 			case 0: // Start
-				g.currentScreen = ScreenMaze
-			case 1: // About
+				g.mazeScreen, err = NewMazeScreen(g.titleScreen.playerSpeed)
+				if err == nil {
+					g.currentScreen = ScreenMaze
+				}
+			case 1: // Player Speed
+				// Speed is handled in title screen
+			case 2: // About
 				g.currentScreen = ScreenAbout
 			}
 		}

@@ -2,7 +2,6 @@ package game
 
 import (
 	"image/color"
-	"time"
 
 	"github.com/bfreis/ebitentools/ebitenwrap"
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,7 +13,6 @@ const (
 	mazeCellDisplayHeight = 32
 	mazeCellDisplayWidth  = 32
 	wallThickness         = 2.0
-	rotationInterval      = time.Second
 	winMessageScale       = 3.0
 )
 
@@ -26,9 +24,10 @@ type MazeScreen struct {
 	ticksSinceLastRotation int
 	hasWon                 bool
 	exitDirection          MazeDirection // Direction where player exited the maze
+	playerSpeed            PlayerSpeed
 }
 
-func NewMazeScreen() (*MazeScreen, error) {
+func NewMazeScreen(playerSpeed PlayerSpeed) (*MazeScreen, error) {
 	const mazeString = `+--+--+--+
 |  |  |   
 +  +--+  +
@@ -47,6 +46,7 @@ func NewMazeScreen() (*MazeScreen, error) {
 		playerDirection:        MazeDirection(North),
 		ticksSinceLastRotation: 0,
 		hasWon:                 false,
+		playerSpeed:            playerSpeed,
 	}, nil
 }
 
@@ -59,9 +59,10 @@ func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 		return nil
 	}
 
-	// Rotate player direction every rotationInterval
+	// Rotate player direction based on player speed
 	s.ticksSinceLastRotation++
-	if s.ticksSinceLastRotation >= int(rotationInterval.Seconds()*float64(tick.TPS)) {
+	rotationTicks := int(float64(tick.TPS) / s.playerSpeed.RotationsPerSecond())
+	if s.ticksSinceLastRotation >= rotationTicks {
 		s.playerDirection = MazeDirection((int(s.playerDirection) + 1) % 4)
 		s.ticksSinceLastRotation = 0
 	}
