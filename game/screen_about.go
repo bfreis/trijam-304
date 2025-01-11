@@ -15,7 +15,8 @@ func NewAboutScreen() *AboutScreen {
 }
 
 func (s *AboutScreen) Update(tick ebitenwrap.Tick) error {
-	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
+	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) ||
+		isButtonJustReleased(tick.InputState) {
 		return nil
 	}
 	return nil
@@ -46,5 +47,5 @@ func (s *AboutScreen) Draw(screen *ebiten.Image) {
 
 	opts = &text.DrawOptions{}
 	opts.GeoM.Translate(300, 400)
-	text.Draw(screen, "Press ESC to return", face7x13, opts)
+	text.Draw(screen, "Press ESC or Enter to return", face7x13, opts)
 }

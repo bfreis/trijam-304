@@ -59,8 +59,8 @@ func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 		s.ticksSinceLastRotation = 0
 	}
 
-	// Move player when enter is pressed
-	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEnter) {
+	// Move player when button is released
+	if isButtonJustReleased(tick.InputState) {
 		nextX, nextY := s.playerX, s.playerY
 		switch s.playerDirection {
 		case MazeDirection(North):

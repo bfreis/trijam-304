@@ -5,6 +5,22 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+func isButtonJustReleased(input ebitenwrap.InputState) bool {
+	// Check keyboard
+	if input.Keyboard().IsKeyJustReleased(ebiten.KeyEnter) {
+		return true
+	}
+
+	// Check mouse - left button
+	if input.Mouse().IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		return true
+	}
+
+	// Check touch - any touch release counts
+	touchIDs := input.Touch().AppendJustReleasedTouchIDs(nil)
+	return len(touchIDs) > 0
+}
+
 type Game struct {
 	currentScreen ScreenType
 	titleScreen   *TitleScreen
@@ -43,7 +59,7 @@ func (g *Game) Update(tick ebitenwrap.Tick) error {
 	switch g.currentScreen {
 	case ScreenTitle:
 		err = g.titleScreen.Update(tick)
-		if err == nil && tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEnter) {
+		if err == nil && isButtonJustReleased(tick.InputState) {
 			switch g.titleScreen.selectedOption {
 			case 0: // Start
 				g.mazeScreen, err = NewMazeScreen(g.titleScreen.playerSpeed, g.titleScreen.mazeSize)
@@ -65,7 +81,8 @@ func (g *Game) Update(tick ebitenwrap.Tick) error {
 		}
 	case ScreenAbout:
 		err = g.aboutScreen.Update(tick)
-		if err == nil && tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
+		if err == nil && (tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) ||
+			isButtonJustReleased(tick.InputState)) {
 			g.currentScreen = ScreenTitle
 		}
 	}

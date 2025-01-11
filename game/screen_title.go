@@ -100,7 +100,7 @@ func (s *TitleScreen) Update(tick ebitenwrap.Tick) error {
 		s.selectedOption = (s.selectedOption + 1) % len(s.options)
 		s.tickCounter = 0
 	}
-	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEnter) {
+	if isButtonJustReleased(tick.InputState) {
 		switch s.options[s.selectedOption] {
 		case "Player Speed":
 			s.playerSpeed = PlayerSpeed((int(s.playerSpeed) + 1) % 3)
