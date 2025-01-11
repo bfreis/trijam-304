@@ -14,12 +14,14 @@ func NewAboutScreen() *AboutScreen {
 	return &AboutScreen{}
 }
 
-func (s *AboutScreen) Update(tick ebitenwrap.Tick) error {
+func (s *AboutScreen) Update(tick ebitenwrap.Tick) (*ScreenTransition, error) {
 	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) ||
 		isButtonJustReleased(tick.InputState) {
-		return nil
+		return &ScreenTransition{
+			NextScreen: ScreenTitle,
+		}, nil
 	}
-	return nil
+	return nil, nil
 }
 
 func (s *AboutScreen) Draw(screen *ebiten.Image) {

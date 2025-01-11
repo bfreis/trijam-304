@@ -42,13 +42,21 @@ func NewMazeScreen(playerSpeed PlayerSpeed, mazeSize MazeSize) (*MazeScreen, err
 	}, nil
 }
 
-func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
+func (s *MazeScreen) Update(tick ebitenwrap.Tick) (*ScreenTransition, error) {
 	if tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
-		return nil
+		return &ScreenTransition{
+			NextScreen: ScreenTitle,
+		}, nil
+	}
+
+	if s.hasWon && isButtonJustReleased(tick.InputState) {
+		return &ScreenTransition{
+			NextScreen: ScreenTitle,
+		}, nil
 	}
 
 	if s.hasWon {
-		return nil
+		return nil, nil
 	}
 
 	// Rotate player direction based on player speed
@@ -78,7 +86,7 @@ func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 			(nextX < 0 || nextX >= s.maze.Width || nextY < 0 || nextY >= s.maze.Height) {
 			s.hasWon = true
 			s.exitDirection = s.playerDirection
-			return nil
+			return nil, nil
 		}
 
 		// Check if movement is valid (within bounds and no wall)
@@ -90,7 +98,7 @@ func (s *MazeScreen) Update(tick ebitenwrap.Tick) error {
 		}
 	}
 
-	return nil
+	return nil, nil
 }
 
 func (s *MazeScreen) Draw(screen *ebiten.Image) {

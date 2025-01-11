@@ -94,9 +94,9 @@ func NewTitleScreen() *TitleScreen {
 	}
 }
 
-func (s *TitleScreen) Update(tick ebitenwrap.Tick) error {
+func (s *TitleScreen) Update(tick ebitenwrap.Tick) (*ScreenTransition, error) {
 	s.tickCounter++
-	if s.tickCounter >= int(tick.TPS) { // Switch every second
+	if s.tickCounter >= tick.TPS { // Switch every second
 		s.selectedOption = (s.selectedOption + 1) % len(s.options)
 		s.tickCounter = 0
 	}
@@ -106,9 +106,19 @@ func (s *TitleScreen) Update(tick ebitenwrap.Tick) error {
 			s.playerSpeed = PlayerSpeed((int(s.playerSpeed) + 1) % 3)
 		case "Maze Size":
 			s.mazeSize = MazeSize((int(s.mazeSize) + 1) % 3)
+		case "Start":
+			return &ScreenTransition{
+				NextScreen:  ScreenMaze,
+				PlayerSpeed: s.playerSpeed,
+				MazeSize:    s.mazeSize,
+			}, nil
+		case "About":
+			return &ScreenTransition{
+				NextScreen: ScreenAbout,
+			}, nil
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 func (s *TitleScreen) Draw(screen *ebiten.Image) {

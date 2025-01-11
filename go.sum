@@ -1,4 +1,4 @@
-github.com/bfreis/ebitentools/ebitenwrap v0.0.1 h1:IO0qh4FxWjHscZ6pShzhlg8b+uKY+C2S92f/dTL7Dxc=
+github.com/bfreis/ebitentools/ebitenwrap v0.0.1 h1:D4H3VK2ixDKMlRorCPrthhJSnZf4RK0teiZmLTY6m1o=
 github.com/bfreis/ebitentools/ebitenwrap v0.0.1/go.mod h1:I2Ha2/+aySEItcZP835tf2Ry8h5PZv+mmUpELra4FtI=
 github.com/bfreis/ebitentools/ebitenwrapfx v0.0.1 h1:lNtJoNM92uZ9OM3ygcyuxN7jUHjmmSgv2PB5Bbsc3P4=
 github.com/bfreis/ebitentools/ebitenwrapfx v0.0.1/go.mod h1:VjL89l0X/x2ru8Qh7Sr5Nu1mbzKb4m3zYITu0CTwZKQ=
@@ -8,8 +8,8 @@ github.com/ebitengine/gomobile v0.0.0-20241016134836-cc2e38a7c0ee h1:YoNt0DHeZ92
 github.com/ebitengine/gomobile v0.0.0-20241016134836-cc2e38a7c0ee/go.mod h1:ZDIonJlTRW7gahIn5dEXZtN4cM8Qwtlduob8cOCflmg=
 github.com/ebitengine/hideconsole v1.0.0 h1:5J4U0kXF+pv/DhiXt5/lTz0eO5ogJ1iXb8Yj1yReDqE=
 github.com/ebitengine/hideconsole v1.0.0/go.mod h1:hTTBTvVYWKBuxPr7peweneWdkUwEuHuB3C1R/ielR1A=
-github.com/ebitengine/purego v0.8.1 h1:sdRKd6plj7KYW33EH5As6YKfe8m9zbN9JMrOjNVF/BE=
-github.com/ebitengine/purego v0.8.1/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
+github.com/ebitengine/purego v0.8.2 h1:jPPGWs2sZ1UgOSgD2bClL0MJIqu58nOmIcBuXr62z1I=
+github.com/ebitengine/purego v0.8.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/go-text/typesetting v0.2.0 h1:fbzsgbmk04KiWtE+c3ZD4W2nmCRzBqrqQOvYlwAOdho=
 github.com/go-text/typesetting v0.2.0/go.mod h1:2+owI/sxa73XA581LAzVuEBZ3WEEV2pXeDswCH/3i1I=
 github.com/go-text/typesetting-utils v0.0.0-20240317173224-1986cbe96c66 h1:GUrm65PQPlhFSKjLPGOZNPNxLCybjzjYBzjfoBGaDUY=

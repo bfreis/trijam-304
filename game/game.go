@@ -55,35 +55,31 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Update(tick ebitenwrap.Tick) error {
 	var err error
+	var transition *ScreenTransition
 
 	switch g.currentScreen {
 	case ScreenTitle:
-		err = g.titleScreen.Update(tick)
-		if err == nil && isButtonJustReleased(tick.InputState) {
-			switch g.titleScreen.selectedOption {
-			case 0: // Start
-				g.mazeScreen, err = NewMazeScreen(g.titleScreen.playerSpeed, g.titleScreen.mazeSize)
+		transition, err = g.titleScreen.Update(tick)
+		if err == nil && transition != nil {
+			switch transition.NextScreen {
+			case ScreenMaze:
+				g.mazeScreen, err = NewMazeScreen(transition.PlayerSpeed, transition.MazeSize)
 				if err == nil {
 					g.currentScreen = ScreenMaze
 				}
-			case 1: // Player Speed
-				// Speed is handled in title screen
-			case 2: // Maze Size
-				// Size is handled in title screen
-			case 3: // About
+			case ScreenAbout:
 				g.currentScreen = ScreenAbout
 			}
 		}
 	case ScreenMaze:
-		err = g.mazeScreen.Update(tick)
-		if err == nil && tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) {
-			g.currentScreen = ScreenTitle
+		transition, err = g.mazeScreen.Update(tick)
+		if err == nil && transition != nil {
+			g.currentScreen = transition.NextScreen
 		}
 	case ScreenAbout:
-		err = g.aboutScreen.Update(tick)
-		if err == nil && (tick.InputState.Keyboard().IsKeyJustPressed(ebiten.KeyEscape) ||
-			isButtonJustReleased(tick.InputState)) {
-			g.currentScreen = ScreenTitle
+		transition, err = g.aboutScreen.Update(tick)
+		if err == nil && transition != nil {
+			g.currentScreen = transition.NextScreen
 		}
 	}
 

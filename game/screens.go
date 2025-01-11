@@ -13,7 +13,14 @@ const (
 	ScreenAbout
 )
 
+type ScreenTransition struct {
+	NextScreen ScreenType
+	// For maze screen, we need to pass these parameters
+	PlayerSpeed PlayerSpeed
+	MazeSize    MazeSize
+}
+
 type Screen interface {
-	Update(tick ebitenwrap.Tick) error
+	Update(tick ebitenwrap.Tick) (*ScreenTransition, error)
 	Draw(screen *ebiten.Image)
 }
