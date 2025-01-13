@@ -1,4 +1,4 @@
-module github.com/bfreis/trijam-go
+module github.com/bfreis/trijam-304
 
 go 1.24rc1
 

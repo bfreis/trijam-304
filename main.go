@@ -5,7 +5,7 @@ import (
 
 	"github.com/bfreis/ebitentools/ebitenwrap"
 	"github.com/bfreis/ebitentools/ebitenwrapfx"
-	"github.com/bfreis/trijam-go/game"
+	"github.com/bfreis/trijam-304/game"
 	"github.com/hajimehoshi/ebiten/v2"
 	"go.uber.org/fx"
 )
